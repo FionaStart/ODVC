@@ -1,0 +1,92 @@
+# =========================
+# 🔐 Environment variables
+# =========================
+.env
+.env.*
+*.env
+
+# =========================
+# 🐍 Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+venv/
+.env/
+.venv/
+env/
+
+# =========================
+# 📦 Build / packaging
+# =========================
+build/
+dist/
+*.egg-info/
+
+# =========================
+# 🧠 Jupyter / notebooks
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# 🖥️ VS Code / IDE
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# 🗄️ Logs
+# =========================
+*.log
+
+# =========================
+# 🌍 GIS / Geospatial data
+# =========================
+
+# Shapefiles (multiple files per dataset)
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+
+# GeoJSON / JSON
+*.geojson
+*.json
+
+# Raster data (VERY large)
+*.tif
+*.tiff
+*.img
+
+# GeoPackage / SQLite
+*.gpkg
+*.sqlite
+
+# CSV (often large in GIS)
+*.csv
+
+# LiDAR / point clouds
+*.las
+*.laz
+
+# Other large formats
+*.zip
+*.7z
+
+# =========================
+# 🧱 PostGIS dumps
+# =========================
+*.sql
+*.dump
+*.backup
+
+# =========================
+# 🚫 OS files
+# =========================
+.DS_Store
+Thumbs.db
