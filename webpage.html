@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tree Predictions Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <style>
+        body { margin: 0; }
+        #map { height: 100vh; }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    var map = L.map('map').setView([-35.1228, 173.6125], 14);
+    //map.fitBounds(layer.getBounds());
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    fetch('http://localhost:5000/data')
+        .then(res => res.json())
+        .then(data => {
+            var layer = L.geoJSON(data, {
+                style: function (feature) {
+                    return {
+                        color: "green",
+                        weight: 2,
+                        fillColor: "green",
+                        fillOpacity: 0.5
+                    };
+                },
+                
+                onEachFeature: function (feature, layer) {
+                    layer.bindPopup("Score: " + feature.properties.score);
+                }
+            }).addTo(map);
+
+            map.fitBounds(layer.getBounds());
+        })
+        .catch(err => console.error('Error fetching GeoJSON data:', err));
+</script>
+
+</body>
+</html>
