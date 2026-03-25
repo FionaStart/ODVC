@@ -6,7 +6,9 @@ from deepforest import utilities
 import os
 import subprocess
 import sys
-import tempfile
+from pyproj import CRS
+import time
+
 
 
 st.title("DeepForest Model Settings")
@@ -57,11 +59,13 @@ settings_2 = {
 
 #Define model running progress bar function
 def run_deepforest_with_progress(image_path,settings,output_gdf_name):
-    st.write("Running DeepForest with internal progress...")
+    st.write("Running DeepForest with tracking...")
     progress_box = st.empty()
+    progress_bar = st.progress(0)
+
     # Build DeepForest command
     cmd = [
-        sys.executable, "-m", "run_tile.py",
+        sys.executable, "-m", "run_tile",
         "--image_path",image_path,
         "--patch_size", str(settings['patch_size']),
         "--patch_overlap", str(settings['patch_overlap']),
@@ -72,17 +76,37 @@ def run_deepforest_with_progress(image_path,settings,output_gdf_name):
     ]
     # Run DeepForest as subprocess so we can capture its progress
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,bufsize=1)
-    # Stream DeepForest progress into Streamlit
-    buffer = ""
-    for chunk in iter(lambda: process.stdout.read(1), ''):
-        buffer += chunk
 
-        #Update Streamlit whenever a carriage return Or newline appears
-        if chunk in ['\r', '\n']:
-            progress_box.write(f"```\n{buffer}\n```")
-            buffer = ""
+    #  Stream DeepForest progress into Streamlit
+
+    logs = ""
     
+    for line in iter(process.stdout.readline, ''):
+        if line == '':
+             break
+
+        logs += line
+        progress_box.code(logs) #show full terminal log
+
+    total_seconds=300
+    for i in range(total_seconds+1):
+        percent = int((i / total_seconds) * 100)
+        progress_bar.progress(percent)
+        time.sleep(1)
+
+
+        #Try to extract progress from output
+    ##    match = re.search(r'(\d+)/(\d+)', line)
+    ##    if match:
+    ##        current = int(match.group(1))
+    ##        total = int(match.group(2))
+    ##        percent = int((current / total) * 100)
+    ##        progress_bar.progress(min(percent,100))
+
+
+
     process.wait()
+    progress_bar.progress(100)
     st.success("DeepForest prediction completed!")
     return output_gdf_name
     

@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 #Load Hugging Face token from .env file
 load_dotenv()
 hf_token = os.getenv("HF_TOKEN")
+os.environ["HUGGINGFACE_HUB_TOKEN"] = hf_token
 
 #Settings
 parser = argparse.ArgumentParser()
