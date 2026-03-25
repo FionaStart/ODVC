@@ -88,21 +88,11 @@ def run_deepforest_with_progress(image_path,settings,output_gdf_name):
         logs += line
         progress_box.code(logs) #show full terminal log
 
-    total_seconds=300
+    total_seconds=10
     for i in range(total_seconds+1):
         percent = int((i / total_seconds) * 100)
         progress_bar.progress(percent)
         time.sleep(1)
-
-
-        #Try to extract progress from output
-    ##    match = re.search(r'(\d+)/(\d+)', line)
-    ##    if match:
-    ##        current = int(match.group(1))
-    ##        total = int(match.group(2))
-    ##        percent = int((current / total) * 100)
-    ##        progress_bar.progress(min(percent,100))
-
 
 
     process.wait()
@@ -113,28 +103,8 @@ def run_deepforest_with_progress(image_path,settings,output_gdf_name):
 #--- Run Model ---
 if run_button and image_path is not None:
 
-    # Initialize model
-    ###model = main.deepforest()
-    ##st.write("Applying model with settings")
 
-   ## st.subheader("1st Run Settings")
-    # Run 1st predictions
-    #run_deepforest_with_progress(image_path,settings_1)
-   # predictions_1 = model.predict_tile(
-   #     path= image_path,
-   #     patch_size=settings_1['patch_size'],
-    #    patch_overlap=settings_1['patch_overlap'],
-   #     #batch_size=settings_1['batch_size'],
-   #     iou_threshold=settings_1['iou_threshold'],
-   #     #score_threshold=settings_1['score_threshold']
-    #)
-    
-    # Filter predictions by score threshold
-   # predictions_1 = predictions_1[predictions_1['score'] >= score_threshold_1]
-    
-    # Apply non-max suppression
-    #predictions_filtered_1 = utilities.non_max_suppression(predictions_1, nms_threshold=iou_threshold_1)
 
-    gdf1 = run_deepforest_with_progress(image_path,settings_1, "run1_predictions.geojson")
-    gdf2 = run_deepforest_with_progress(image_path,settings_2, "run2_predictions.geojson")
+    gdf1 = run_deepforest_with_progress(image_path,settings_1, "run1_predictions.csv")
+    gdf2 = run_deepforest_with_progress(image_path,settings_2, "run2_predictions.csv")
 

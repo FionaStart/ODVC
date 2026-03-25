@@ -34,5 +34,5 @@ gdf = gdf[gdf['score'] >= args.score_threshold]
 if os.path.exists(args.output_gdf):
     os.remove(args.output_gdf)
 
-gdf.to_file(args.output_gdf, driver = "GeoJSON")
+gdf.to_csv(args.output_gdf, index=False)
 print(f"\nSaved predictions to {args.output_gdf}")
