@@ -243,7 +243,7 @@
     //    attribution: '&copy; OpenStreetMap contributors'
     //}).addTo(map1);
 
-    fetch('http://localhost:5000/data')
+    fetch('run1_predictions.geojson')
         .then(res => res.json())
         .then(data => {
             var layer = L.geoJSON(data, {
@@ -266,7 +266,63 @@
         .catch(err => console.error('Error fetching GeoJSON data:', err));
 </script>
 <!-- Leaflet Map Script for 2nd Tree Detected Map -->
+<script>
+    var map2 = L.map('leaflet-map-2').setView([-35.1228, 173.6125], 14);
+    //Load local GeoTIFF
+    fetch("data/TreeAOIWGS84.tif")
+        .then(response => response.arrayBuffer())
+        .then(buffer => parseGeoraster(buffer))
+        .then(georaster => {
+            // Process the GeoTIFF data
+            const layer = new GeoRasterLayer({
+                georaster: georaster,
+                opacity: 1.0,
 
+                //Make black background transparent
+                pixelValuesToColorFn: values => {
+                    const [r,g,b] = values; // R,G,B values
+                    if (r === 0 && g === 0 && b === 0) {
+                        return null; // Transparent for background
+                    } else {
+                        return `rgba(${r}, ${g}, ${b}, 1)`; // Keep original color for detected trees
+                    }
+                },
+
+                resolution: 256
+            });
+           
+            layer.addTo(map2);
+            map2.fitBounds(layer.getBounds());
+        })
+        .catch(error => console.error("Error loading GeoTIFF:", error));
+
+    //add OpenStreetMap tile layer  
+    // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //    attribution: '&copy; OpenStreetMap contributors'
+    //}).addTo(map1);
+
+    fetch('run2_predictions.geojson')
+        .then(res => res.json())
+        .then(data => {
+            var layer = L.geoJSON(data, {
+                style: function (feature) {
+                    return {
+                        color: "blue",
+                        weight: 2,
+                        fillColor: "null",
+                        fillOpacity: 0.5
+                    };
+                },
+                
+                onEachFeature: function (feature, layer) {
+                    layer.bindPopup("Score: " + feature.properties.score);
+                }
+            }).addTo(map2);
+
+            map2.fitBounds(layer.getBounds());
+        })
+        .catch(err => console.error('Error fetching GeoJSON data:', err));
+</script>
 
 
 
