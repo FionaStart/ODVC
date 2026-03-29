@@ -164,19 +164,55 @@
 <body>
 
   <h1>Tree Detection Comparison Report</h1>
-  <div class="subtitle">Deep Forest Model &mdash; Effect of Patch Size on Tree Detection</div>
+  <div id="container"></div>
+
+    <script>
+        // Function to fetch CSV
+        async function loadCSV() {
+            const response = await fetch('settings.csv'); // CSV file path
+            const text = await response.text();
+            return text.split('\n').slice(1)  // skip header
+                .map(line => line.split(','))
+                .filter(arr => arr.length === 5);
+        }
+
+        async function createElements() {
+            const data = await loadCSV();
+            const container = document.getElementById('container');
+
+            data.forEach(row => {
+                const [id, name, value] = row;
+
+                // Create a div with data attributes
+                const div = document.createElement('div');
+                div.textContent = `${name}: ${value}`;
+                div.setAttribute('data-patch_size', patch_size);
+                div.setAttribute('data-patch_overlap', patch_overlap);
+                div.setAttribute('data-score_threshold', score_threshold);
+                div.setAttribute('data-iou_threshold', iou_threshold);
+                div.setAttribute('data-batch_size', batch_size);
+
+                container.appendChild(div);
+            });
+        }
+
+        createElements();
+    </script>
+  <div class="subtitle">Deep Forest Model &mdash; Different Settings on Tree Detection</div>
+  
+
 
   <section class="top-panels">
     <div class="panel">
       <h2>1st Configuration &mdash; Patch Size 200</h2>
 
       <h3>Settings</h3>
-      <ul>
-        <li>Patch Size: 200</li>
-        <li>Patch Overlap: 0.2</li>
-        <li>IoU Threshold: 0.15</li>
-        <li>Batch Size: 4</li>
-        <li>Score Threshold: 0.4</li>
+      <ul id="settings1List">
+          <li id="patch_size_1"></li>
+          <li id="patch_overlap_1"></li>
+          <li id="score_threshold_1"></li>
+          <li id="iou_threshold_1"></li>
+          <li id="batch_size_1"></li>
       </ul>
 
       <div class="stats">
@@ -189,12 +225,12 @@
       <h2>2nd Configuration &mdash; Patch Size 1200</h2>
 
       <h3>Settings</h3>
-      <ul>
-        <li>Patch Size: 1200</li>
-        <li>Patch Overlap: 0.2</li>
-        <li>IoU Threshold: 0.15</li>
-        <li>Batch Size: 4</li>
-        <li>Score Threshold: 0.4</li>
+      <ul id="settings2List">
+         <li id="patch_size_2"></li>
+         <li id="patch_overlap_2"></li>
+         <li id="score_threshold_2"></li>
+         <li id="iou_threshold_2"></li>
+         <li id="batch_size_2"></li>
       </ul>
 
       <div class="stats">
@@ -202,7 +238,55 @@
         <div><span class="label">Score Range:</span> 0.2 &ndash; 0.8</div>
       </div>
     </div>
+
   </section>
+  <script>
+        async function loadCSV() {
+            const response = await fetch('settings.csv'); // CSV path
+            const text = await response.text();
+            const lines = text.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',');
+                const obj = {};
+                headers.forEach((h, idx) => {
+                    if (h === "name") {
+                        obj[h] = values[idx];
+                    } else {
+                        obj[h] = isNaN(values[idx]) ? values[idx] : Number(values[idx]);
+                    }
+                });
+                data.push(obj);
+            }
+            return data;
+        }
+
+        async function displaySettings() {
+            const settings = await loadCSV();
+
+            // Assuming settings[0] = settings_1, settings[1] = settings_2
+            const s1 = settings[0];
+            const s2 = settings[1];
+
+            // Update Settings 1
+            document.getElementById('patch_size_1').textContent = `Patch Size: ${s1.patch_size}`;
+            document.getElementById('patch_overlap_1').textContent = `Patch Overlap: ${s1.patch_overlap}`;
+            document.getElementById('score_threshold_1').textContent = `Score Threshold: ${s1.score_threshold}`;
+            document.getElementById('iou_threshold_1').textContent = `IoU Threshold: ${s1.iou_threshold}`;
+            document.getElementById('batch_size_1').textContent = `Batch Size: ${s1.batch_size}`;
+
+            // Update Settings 2
+            document.getElementById('patch_size_2').textContent = `Patch Size: ${s2.patch_size}`;
+            document.getElementById('patch_overlap_2').textContent = `Patch Overlap: ${s2.patch_overlap}`;
+            document.getElementById('score_threshold_2').textContent = `Score Threshold: ${s2.score_threshold}`;
+            document.getElementById('iou_threshold_2').textContent = `IoU Threshold: ${s2.iou_threshold}`;
+            document.getElementById('batch_size_2').textContent = `Batch Size: ${s2.batch_size}`;
+        }
+
+        displaySettings();
+    </script>
 
 <!-- Include Leaflet CSS -->
 <link

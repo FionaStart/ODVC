@@ -1,5 +1,5 @@
-import warnings
-warnings.filterwarnings("ignore",category=DeprecationWarning)
+from asyncio import log
+import pandas as pd
 import streamlit as st
 from deepforest import main 
 from deepforest import utilities
@@ -8,6 +8,7 @@ import subprocess
 import sys
 from pyproj import CRS
 import time
+import csv
 
 
 
@@ -16,7 +17,7 @@ st.header("Select Local Tiff File")
 image_path = st.text_input("Enter the path to your local TIFF file:") #   D:\Thesis2026\ProjectCode\Data\TreeAOIWGS84.tif
 if st.button("Load Image"):
     if os.path.isfile(image_path):
-        st.success("Image loaded successfully!")
+        st.success("✅ Image loaded successfully!")
     else:
         st.error("File not found. Please check the path and try again.")
 
@@ -56,10 +57,13 @@ settings_2 = {
     'iou_threshold': iou_threshold_2,
     'batch_size': batch_size_2
 }
+#Create settings.csv file to store settings for both runs
+df = pd.DataFrame([settings_1, settings_2], index=["Run 1", "Run 2"])
+df.to_csv("settings.csv", index=True)
 
 #Define model running progress bar function
 def run_deepforest_with_progress(image_path,settings,output_gdf_name):
-    st.write("Running DeepForest with tracking...")
+    st.write("⏳ Running Model...")
     progress_box = st.empty()
     progress_bar = st.progress(0)
 
@@ -78,33 +82,56 @@ def run_deepforest_with_progress(image_path,settings,output_gdf_name):
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,bufsize=1)
 
     #  Stream DeepForest progress into Streamlit
+    logs = []
+    replace_next = False
+    total_lines = 122
+    processed_lines = 0
 
-    logs = ""
-    
     for line in iter(process.stdout.readline, ''):
-        if line == '':
-             break
+        if not line:
+            break
 
-        logs += line
-        progress_box.code(logs) #show full terminal log
+        line = line.strip()
+        is_predicting = "predicting" in line.lower()
 
-    total_seconds=10
-    for i in range(total_seconds+1):
-        percent = int((i / total_seconds) * 100)
-        progress_bar.progress(percent)
-        time.sleep(1)
+        if is_predicting:
+            if replace_next:
+                #Replace the last line
+               if logs:
+                   logs[-1] = line
+            else:
+                logs.append(line)
+                replace_next = True
+        else:
+            logs.append(line)
+            #If this line contains "predicting", mark for replacement
 
+            replace_next = False
 
+        #Update progress box
+        with progress_box.container(height=200):
+            st.code("\n".join(logs), language="bash")  # Show last 10 lines of log
+        
+        #Update progress bar
+        processed_lines += 1
+        progress = int((processed_lines / total_lines) * 100)
+        progress_bar.progress(min(progress, 100))  # Cap at 100%
+
+        time.sleep(0.1)  # Small delay to allow UI to update
+       
     process.wait()
     progress_bar.progress(100)
-    st.success("DeepForest prediction completed!")
+    
     return output_gdf_name
     
-#--- Run Model ---
+#--- Run Model & Create settings relational table---
 if run_button and image_path is not None:
 
-
-
     gdf1 = run_deepforest_with_progress(image_path,settings_1, "run1_predictions.csv")
+    st.success("✅ 1st run completed! Predictions saved to run1_predictions.csv")
     gdf2 = run_deepforest_with_progress(image_path,settings_2, "run2_predictions.csv")
+    st.success("✅ 2nd run completed! Predictions saved to run2_predictions.csv")
+    #Create new table SettingInfo.csv to store 1st and 2nd run settings and output path
+
+
 
