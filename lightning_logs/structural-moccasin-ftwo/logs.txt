@@ -1,0 +1,20 @@
+GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+\U0001f4a1 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
+0% complete
+litlogger: Experiment initialized
+           Name: visiting-orange-lxtx
+      Teamspace: default-teamspace
+        View at: https://lightning.ai/guestf5ae9c21-74f7-4d23-a281-2c3bb1c47f07/default-teamspace/experiments/visiting-orange-lxtx
+
+Traceback (most recent call last):
+  File "D:\Thesis2026\ProjectCode\ODVC\run_tile.py", line 49, in <module>
+    logger.log_metrics("progress_percent", percent)
+  File "C:\Users\lifan\.conda\envs\deepforest\lib\site-packages\lightning_utilities\core\rank_zero.py", line 42, in wrapped_fn
+    return fn(*args, **kwargs)
+  File "C:\Users\lifan\.conda\envs\deepforest\lib\site-packages\lightning\pytorch\loggers\litlogger.py", line 221, in log_metrics
+    metrics = {k: v.item() if isinstance(v, Tensor) else v for k, v in metrics.items()}
+AttributeError: 'str' object has no attribute 'items'
+cannot schedule new futures after interpreter shutdown
+litlogger: Run complete
+        View at: https://lightning.ai/guestf5ae9c21-74f7-4d23-a281-2c3bb1c47f07/default-teamspace/experiments/visiting-orange-lxtx

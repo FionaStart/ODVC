@@ -11,10 +11,10 @@ os.environ["HUGGINGFACE_HUB_TOKEN"] = hf_token
 #Settings
 parser = argparse.ArgumentParser()
 parser.add_argument("--image_path", type=str, required=True, help="Path to the input image")
-parser.add_argument("--patch_size", type=int, default=400, help="Size of the patches to split the image into")
-parser.add_argument("--patch_overlap", type=float, default=0.0, help="Overlap between patches (0-1)")  
-parser.add_argument("--score_threshold", type=float, default=0.0, help="Minimum score threshold for predictions (0-1)")
-parser.add_argument("--iou_threshold", type=float, default=0.0, help="IOU threshold for non-max suppression (0-1)") 
+parser.add_argument("--patch_size", type=int, default=800, help="Size of the patches to split the image into")
+parser.add_argument("--patch_overlap", type=float, default=0.25, help="Overlap between patches (0-1)")  
+parser.add_argument("--score_threshold", type=float, default=0.2, help="Minimum score threshold for predictions (0-1)")
+parser.add_argument("--iou_threshold", type=float, default=0.15, help="IOU threshold for non-max suppression (0-1)") 
 parser.add_argument("--batch_size", type=int, default=16, help="Batch size for prediction")
 parser.add_argument("--output_gdf", type=str, help="Path to the output GeoDataFrame file")
 args = parser.parse_args()
@@ -25,7 +25,6 @@ gdf = model.predict_tile(
     patch_size=args.patch_size,
     patch_overlap=args.patch_overlap,
     iou_threshold=args.iou_threshold,
-#    score_threshold=args.score_threshold,
 #    batch_size=args.batch_size
 )
 # Filter predictions by score threshold
