@@ -4,7 +4,7 @@
 ### This project aims to...
 
 ## 2. Tech tags
-### <div style="color:red;">Python</div> <div style="color:red;">Jupyter Notebook</div> <div style="color:red;">Jave Script</div> <div style="color:red;">PostgresSQL</div> <div style="color:red;">HTML</div> <div style="color:red;">Geopandas</div> <div style="color:red;">Leaflet</div> <div style="color:red;">Geojson</div> <div style="color:red;">QGIS</div> <div style="color:red;">Deep Learing Model</div> <div style="color:red;">Workflow Automation</div>
+<div style="color:red;">Python</div> <div style="color:red;">Jupyter Notebook</div> <div style="color:red;">Jave Script</div> <div style="color:red;">PostgresSQL</div> <div style="color:red;">HTML</div> <div style="color:red;">Geopandas</div> <div style="color:red;">Leaflet</div> <div style="color:red;">Geojson</div> <div style="color:red;">QGIS</div> <div style="color:red;">Deep Learing Model</div> <div style="color:red;">Workflow Automation</div>
 
 ## 3. Project Folder
 - data
