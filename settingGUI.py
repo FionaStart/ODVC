@@ -37,7 +37,7 @@ with col_right:
     st.header("Settings for 2nd Run")
     patch_size_2 = st.slider("Patch Size (2nd Run)", min_value=400, max_value=2000, value=1200, step=100)
     patch_overlap_2 = st.slider("Patch Overlap (2nd Run)", min_value=0.0, max_value=1.0, value=0.25, step=0.05)
-    score_threshold_2 = st.slider("Score Threshold (2nd Run)", min_value=0.0, max_value=1.0, value=0.4, step=0.05)
+    score_threshold_2 = st.slider("Score Threshold (2nd Run)", min_value=0.0, max_value=1.0, value=0.2, step=0.05)
     iou_threshold_2 = st.slider("NMS IOU Threshold (2nd Run)", min_value=0.0, max_value=1.0, value=0.15, step=0.05)
     batch_size_2 = st.slider("Batch Size (2nd Run)", min_value=1, max_value=32, value=4)
 
@@ -59,7 +59,7 @@ settings_2 = {
 }
 #Create settings.csv file to store settings for both runs
 df = pd.DataFrame([settings_1, settings_2], index=["Run 1", "Run 2"])
-df.to_csv("settings.csv", index=True)
+df.to_csv("Output/settings.csv", index=True)
 
 #Define model running progress bar function
 def run_deepforest_with_progress(image_path,settings,output_gdf_name):
@@ -127,11 +127,11 @@ def run_deepforest_with_progress(image_path,settings,output_gdf_name):
 #--- Run Model & Create settings relational table---
 if run_button and image_path is not None:
 
-    gdf1 = run_deepforest_with_progress(image_path,settings_1, "run1_predictions.csv")
-    st.success("✅ 1st run completed! Predictions saved to run1_predictions.csv")
-    gdf2 = run_deepforest_with_progress(image_path,settings_2, "run2_predictions.csv")
-    st.success("✅ 2nd run completed! Predictions saved to run2_predictions.csv")
-    #Create new table SettingInfo.csv to store 1st and 2nd run settings and output path
+    gdf1 = run_deepforest_with_progress(image_path,settings_1, "Output/run1_predictions.csv")
+    st.success("✅ 1st run completed! Predictions saved as run1_predictions.csv")
+    gdf2 = run_deepforest_with_progress(image_path,settings_2, "Output/run2_predictions.csv")
+    st.success("✅ 2nd run completed! Predictions saved as run2_predictions.csv")
+
 
 
 

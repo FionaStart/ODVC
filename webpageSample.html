@@ -97,15 +97,16 @@
       margin: 0 6px;
     }
     .dot-red,
-    .dot-blue {
+    .dot-blue,
+    .dot-yellow {
       display: inline-block;
       width: 10px;
       height: 10px;
-      border-radius: 50%;
       margin-right: 4px;
     }
-    .dot-red { background: #d62828; }
-    .dot-blue { background: #0077b6; }
+    .dot-red {  background-color: transparent; border:2px solid red }
+    .dot-blue { background-color: transparent; border:2px solid blue }
+    .dot-yellow { background-color: transparent; border:2px solid yellow }
 
     @media (max-width: 900px) {
       .bottom-maps {
@@ -169,11 +170,11 @@
     <script>
         // Function to fetch CSV
         async function loadCSV() {
-            const response = await fetch('settings.csv'); // CSV file path
+            const response = await fetch('Output/settings.csv'); // CSV file path
             const text = await response.text();
             return text.split('\n').slice(1)  // skip header
                 .map(line => line.split(','))
-                .filter(arr => arr.length === 5);
+                .filter(arr => arr.length === 7);
         }
 
         async function createElements() {
@@ -191,6 +192,7 @@
                 div.setAttribute('data-score_threshold', score_threshold);
                 div.setAttribute('data-iou_threshold', iou_threshold);
                 div.setAttribute('data-batch_size', batch_size);
+                div.setAttribute('data-file_name', file_name);
 
                 container.appendChild(div);
             });
@@ -199,13 +201,22 @@
         createElements();
     </script>
   <div class="subtitle">Deep Forest Model &mdash; Different Settings on Tree Detection</div>
-  
 
+<!-- Download Button, Export webpage as PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <button onclick="downloadPDF()">Download PDF</button>
+
+  <script>
+  function downloadPDF() {
+      const element = document.body;
+      map.invalidateSize(); // Ensure Leaflet maps render correctly in PDF
+      html2pdf().from(element).save("ComparisonReport.pdf");
+  }
+  </script>
 
   <section class="top-panels">
     <div class="panel">
-      <h2>1st Configuration &mdash; Patch Size 200</h2>
-
+      <h2>1st Configuration</h2>
       <h3>Settings</h3>
       <ul id="settings1List">
           <li id="patch_size_1"></li>
@@ -215,9 +226,11 @@
           <li id="batch_size_1"></li>
       </ul>
 
+      <h3>Outputs</h3>
+
       <div class="stats">
-        <div><span class="label">Number of Detections:</span> 52</div>
-        <div><span class="label">Score Range:</span> 0.1 &ndash; 0.5</div>
+        <div id="rowCount1"></div>
+        <div id="scoreRangeDiv1"></div>
       </div>
     </div>
 
@@ -232,17 +245,17 @@
          <li id="iou_threshold_2"></li>
          <li id="batch_size_2"></li>
       </ul>
-
+      <h3>Outputs</h3>
       <div class="stats">
-        <div><span class="label">Number of Detections:</span> 736</div>
-        <div><span class="label">Score Range:</span> 0.2 &ndash; 0.8</div>
+        <div id="rowCount2"></div>
+        <div id="scoreRangeDiv2"></div>
       </div>
     </div>
 
   </section>
   <script>
         async function loadCSV() {
-            const response = await fetch('settings.csv'); // CSV path
+            const response = await fetch('Output/settings.csv'); // CSV path
             const text = await response.text();
             const lines = text.trim().split('\n');
             const headers = lines[0].split(',').map(h => h.trim());
@@ -286,6 +299,94 @@
         }
 
         displaySettings();
+
+        async function getCSVRowCount(csvPath) {
+            const response = await fetch(csvPath);
+            const text = await response.text();
+
+            // Split by newlines
+            const lines = text.trim().split('\n');
+
+            // Exclude header row
+            const rowCount = lines.length - 1;
+
+            return rowCount;
+        }
+
+        async function displayRowCount1() {
+            const count = await getCSVRowCount('Output/run1_predictions.csv');
+            document.getElementById('rowCount1').textContent =
+                `Number of Detections: ${count}`;
+        }
+
+        displayRowCount1();
+
+        async function displayRowCount2() {
+            const count = await getCSVRowCount('Output/run2_predictions.csv');
+            document.getElementById('rowCount2').textContent =
+                `Number of Detections: ${count}`;
+        }
+
+        displayRowCount2();
+
+        async function getScoreRange(csvPath) {
+            const response = await fetch(csvPath);
+            const text = await response.text();
+
+            // Split CSV into lines
+            const lines = text.trim().split('\n');
+
+            // Get headers
+            const headers = lines[0].split(',').map(h => h.trim());
+            const scoreIndex = headers.indexOf('score');
+            if (scoreIndex === -1) throw new Error('Column "score" not found');
+
+            // Extract values from score column
+            const scores = lines.slice(1)
+                                .map(line => line.split(',')[scoreIndex].trim())
+                                .map(v => Number(v))
+                                .filter(v => !isNaN(v));
+
+            const min = Math.min(...scores);
+            const max = Math.max(...scores);
+
+            return {min: min.toFixed(2), max: max.toFixed(2)};
+        }
+
+        async function displayScoreRange1() {
+            const container = document.getElementById('scoreRangeDiv1');
+            const range = await getScoreRange('Output/run1_predictions.csv');
+
+            // Display in HTML
+            container.textContent = `Score Range: ${range.min} - ${range.max}`;
+
+            // Add as data attributes
+            container.dataset.min = range.min;
+            container.dataset.max = range.max;
+
+            console.log("Score min:", container.dataset.min);
+            console.log("Score max:", container.dataset.max);
+        }
+
+        displayScoreRange1();
+
+        async function displayScoreRange2() {
+            const container = document.getElementById('scoreRangeDiv2');
+            const range = await getScoreRange('Output/run2_predictions.csv');
+
+            // Display in HTML
+            container.textContent = `Score Range: ${range.min} - ${range.max}`;
+
+            // Add as data attributes
+            container.dataset.min = range.min;
+            container.dataset.max = range.max;
+
+            console.log("Score min:", container.dataset.min);
+            console.log("Score max:", container.dataset.max);
+        }
+
+        displayScoreRange2();
+    
     </script>
 
 <!-- Include Leaflet CSS -->
@@ -341,7 +442,7 @@
     </div>
   </section>
 
-  <h3>1&2 Overlap Detected Trees Attribute Table</h3>
+  <h3>1&2 Overlap Detected Trees Attribute Table </h3>
   <div id="attr-table-container">
     <div id="attr-table"></div>
   </div>
@@ -370,7 +471,7 @@
                     }
                 },
 
-                resolution: 256
+                resolution: 128
             });
            
             layer.addTo(map1);
@@ -383,10 +484,12 @@
 
     //add OpenStreetMap tile layer  
      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: '&copy; OpenStreetMap contributors',
+        maxNativeZoom: 19,
+        maxZoom: 22
     }).addTo(map1);
 
-    fetch('run1_predictions.geojson')
+    fetch('Output/run1_predictions.geojson')
         .then(res => res.json())
         .then(data => {
             var layer = L.geoJSON(data, {
@@ -400,13 +503,11 @@
                 },
                 
                 onEachFeature: function (feature, layer) {
-                    layer.bindPopup("Score: " + feature.properties.score);
+                    layer.bindPopup("Score: " + feature.properties.score.toFixed(2));
                 }
             }).addTo(map1);
 
             map1.fitBounds(layer.getBounds());
-            //map1.zoomIn(1)
-
         })
         .catch(err => console.error('Error fetching GeoJSON data:', err));
     
@@ -434,7 +535,7 @@
                     }
                 },
 
-                resolution: 256
+                resolution: 128
             });
            
             layer.addTo(map2);
@@ -444,10 +545,12 @@
 
     //add OpenStreetMap tile layer  
      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: '&copy; OpenStreetMap contributors',
+        maxNativeZoom: 19,
+        maxZoom: 22
     }).addTo(map2);
 
-    fetch('run2_predictions.geojson')
+    fetch('Output/run2_predictions.geojson')
         .then(res => res.json())
         .then(data => {
             var layer = L.geoJSON(data, {
@@ -461,7 +564,7 @@
                 },
                 
                 onEachFeature: function (feature, layer) {
-                    layer.bindPopup("Score: " + feature.properties.score);
+                    layer.bindPopup("Score: " + feature.properties.score.toFixed(2));
                 }
             }).addTo(map2);
 
@@ -469,9 +572,6 @@
         })
         .catch(err => console.error('Error fetching GeoJSON data:', err));
 </script>
-
-
-
 
 
 <!-- Leaflet Map Script for 1st&2nd Tree Detected Map -->
@@ -497,7 +597,7 @@
                     }
                 },
 
-                resolution: 256
+                resolution: 128
             });
            
             layer.addTo(map3);
@@ -507,10 +607,12 @@
 
     //add OpenStreetMap tile layer  
      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: '&copy; OpenStreetMap contributors',
+        maxNativeZoom: 19,
+        maxZoom: 22
     }).addTo(map3);
 
-    fetch('run1_predictions.geojson')
+    fetch('Output/run1_predictions.geojson')
         .then(res => res.json())
         .then(data => {
             var layer = L.geoJSON(data, {
@@ -524,7 +626,7 @@
                 },
                 
                 onEachFeature: function (feature, layer) {
-                    layer.bindPopup("Score: " + feature.properties.score);
+                    layer.bindPopup("Score: " + feature.properties.score.toFixed(2));
                 }
             }).addTo(map3);
 
@@ -532,7 +634,7 @@
         })
         .catch(err => console.error('Error fetching GeoJSON data:', err));
 
-    fetch('run2_predictions.geojson')
+    fetch('Output/run2_predictions.geojson')
         .then(res => res.json())
         .then(data => {
             var layer = L.geoJSON(data, {
@@ -554,7 +656,7 @@
         })
         .catch(err => console.error('Error fetching GeoJSON data:', err));
 
-    fetch('1&2run_overlap.geojson')
+    fetch('Output/1&2run_Overlap.geojson')
         .then(res => res.json())
         .then(data => {
             var layer = L.geoJSON(data, {
@@ -568,7 +670,7 @@
                 },
                 
                 onEachFeature: function (feature, layer) {
-                    layer.bindPopup("Score: " + feature.properties.score);
+                    layer.bindPopup("Score: " + feature.properties.score.toFixed(2));
                 }
             }).addTo(map3);
 
@@ -579,7 +681,7 @@
 
 
 <script>
-  fetch('1&2run_overlap.geojson')
+  fetch('Output/1&2run_Overlap.geojson')
   .then(res => res.json())
   .then(data => {
     const features = data.features || [];
@@ -619,8 +721,6 @@
   })
   .catch(err => console.error('Error loading GeoJSON:', err));
 </script>
-
-
 
 
 </body>
