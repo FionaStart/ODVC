@@ -1,12 +1,13 @@
 # Workflow Automation of Tree Detection Visualization Comparison 
 ## -by DeepForest Model
-## 1. Introduction
-### This project aims to...
 
-## 2. Tech tags
-<div style="color:red;">Python</div> <div style="color:red;">Jupyter Notebook</div> <div style="color:red;">Jave Script</div> <div style="color:red;">PostgresSQL</div> <div style="color:red;">HTML</div> <div style="color:red;">Geopandas</div> <div style="color:red;">Leaflet</div> <div style="color:red;">Geojson</div> <div style="color:red;">QGIS</div> <div style="color:red;">Deep Learing Model</div> <div style="color:red;">Workflow Automation</div>
+## Introduction
+This project aims to...
 
-## 3. Project Folder
+## Tech tags
+Python Jupyter Notebook Jave Script PostgresSQL HTML Geopandas Leaflet Geojson QGIS Deep Learing Model Workflow Automation Streamlit
+add link
+## Project Folder
 - data
   - TreeAOIWGS84.tif
 - Output
@@ -21,7 +22,7 @@
 - ObjectDetectVisualComp.ipynb
 - ComparisonWebpage.html
 
-## 4. Results
+## Results
 Settings.csv (Relational Table)
 |  | patch_size | patch_overlap | score_threshold | iou_threshold | batch_size |file_name |
 | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
@@ -34,3 +35,5 @@ Geojson file attribute Table
 | -------- | -------- | -------- |-------- | -------- | -------- |-------- | -------- |
 | 4733   | 1802   | 4799   |1876   | Tree  | 0.560285925865173   |TreeAOIWGS84.tif   | POLYGON ((4799 1802, 4799 1876, 4733 1876, 4733 1802, 4799 1802))   |
 | 4532   | 2385   | 4775   |2608   | Tree   | 0.53722459077835   | TreeAOIWGS84.tif   | POLYGON ((4775 2385, 4775 2608, 4532 2608, 4532 2385, 4775 2385))   |
+
+## Demo

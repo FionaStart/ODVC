@@ -52,6 +52,26 @@
     .panel li {
       margin-bottom: 3px;
     }
+
+    .panel-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .panel-content ul {
+      flex: 1;
+      margin: 0;
+      padding:0;
+      list-style: none;
+    }
+    .chart-container {
+      flex: 0 0 300px;
+      min-width: 200px;
+      height:200px;
+      margin-left: auto;
+    }
+
     .stats {
       margin-top: 10px;
       font-size: 0.9rem;
@@ -158,6 +178,20 @@
       background-color: #f1f1f1;
     }
 
+    /* Download button styling */
+    .fixed-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 15px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
 
     
   </style>
@@ -169,7 +203,7 @@
 
     <script>
         // Function to fetch CSV
-        async function loadCSV() {
+        async function loadSettingsCSV() {
             const response = await fetch('Output/settings.csv'); // CSV file path
             const text = await response.text();
             return text.split('\n').slice(1)  // skip header
@@ -178,15 +212,15 @@
         }
 
         async function createElements() {
-            const data = await loadCSV();
+            const data = await loadSettingsCSV();
             const container = document.getElementById('container');
 
             data.forEach(row => {
-                const [id, name, value] = row;
+                const [patch_size, patch_overlap, score_threshold, iou_threshold, batch_size, file_name] = row;
 
                 // Create a div with data attributes
                 const div = document.createElement('div');
-                div.textContent = `${name}: ${value}`;
+                //div.textContent = `Patch Size: ${patch_size}`;
                 div.setAttribute('data-patch_size', patch_size);
                 div.setAttribute('data-patch_overlap', patch_overlap);
                 div.setAttribute('data-score_threshold', score_threshold);
@@ -204,55 +238,75 @@
 
 <!-- Download Button, Export webpage as PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <button onclick="downloadPDF()">Download PDF</button>
+  <button class="fixed-btn" onclick="downloadPDF()">Download PDF</button>
 
   <script>
   function downloadPDF() {
       const element = document.body;
-      map.invalidateSize(); // Ensure Leaflet maps render correctly in PDF
-      html2pdf().from(element).save("ComparisonReport.pdf");
+
+      const opt = {
+          margin:       0.5,
+          filename:     'ComparisonReport.pdf',
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2 },
+          jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+      };
+
+      map1.invalidateSize(); // Ensure Leaflet maps render correctly in PDF
+      map2.invalidateSize();
+      map3.invalidateSize();
+      html2pdf().set(opt).from(element).save("ComparisonReport.pdf");
   }
   </script>
+
+  <!-- Include Chart.js for score range bar chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <section class="top-panels">
     <div class="panel">
       <h2>1st Configuration</h2>
       <h3>Settings</h3>
-      <ul id="settings1List">
-          <li id="patch_size_1"></li>
-          <li id="patch_overlap_1"></li>
-          <li id="score_threshold_1"></li>
-          <li id="iou_threshold_1"></li>
-          <li id="batch_size_1"></li>
-      </ul>
-
-      <h3>Outputs</h3>
-
-      <div class="stats">
-        <div id="rowCount1"></div>
-        <div id="scoreRangeDiv1"></div>
+      <div class="panel-content">
+        <ul id="settings1List">
+            <li id="patch_size_1"></li>
+            <li id="patch_overlap_1"></li>
+            <li id="score_threshold_1"></li>
+            <li id="iou_threshold_1"></li>
+            <li id="batch_size_1"></li>
+            <h3>Outputs</h3>
+            <li id="rowCount1"></li>
+            <li id="scoreRangeDiv1"></li>
+        </ul> 
+        <div class="chart-container">
+          <canvas id="histChart1"></canvas>
+        </div>   
       </div>
+      
     </div>
 
     <div class="panel">
       <h2>2nd Configuration &mdash; Patch Size 1200</h2>
 
       <h3>Settings</h3>
-      <ul id="settings2List">
-         <li id="patch_size_2"></li>
-         <li id="patch_overlap_2"></li>
-         <li id="score_threshold_2"></li>
-         <li id="iou_threshold_2"></li>
-         <li id="batch_size_2"></li>
-      </ul>
-      <h3>Outputs</h3>
-      <div class="stats">
-        <div id="rowCount2"></div>
-        <div id="scoreRangeDiv2"></div>
-      </div>
+      <div class="panel-content">
+        <ul id="settings2List">
+           <li id="patch_size_2"></li>
+           <li id="patch_overlap_2"></li>
+           <li id="score_threshold_2"></li>
+           <li id="iou_threshold_2"></li>
+           <li id="batch_size_2"></li>
+           <h3>Outputs</h3>
+           <li id="rowCount2"></li>
+           <li id="scoreRangeDiv2"></li>
+        </ul>
+        <div class="chart-container">
+          <canvas id="histChart2"></canvas>
+        </div>        
+      </div>    
     </div>
 
   </section>
+  
   <script>
         async function loadCSV() {
             const response = await fetch('Output/settings.csv'); // CSV path
@@ -329,6 +383,54 @@
 
         displayRowCount2();
 
+        //Converts CSV text to score counts per bucket
+        function getScoreDistribution(csvText, bucketSize = 0.05) {
+            const lines = csvText.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            const scoreIndex = headers.indexOf('score');
+            if (scoreIndex === -1) throw new Error('Column "score" not found');
+
+            const bucketCount = Math.ceil(1 / bucketSize);
+            const buckets = Array(bucketCount).fill(0);
+            lines.slice(1).forEach(line => {
+                const val = parseFloat(line.split(',')[scoreIndex]);
+                if (!isNaN(val)) {
+                    let index = Math.floor(val / bucketSize);
+                    if (index >= bucketCount) index = bucketCount - 1; // Handle edge
+                    buckets[index]++;                
+                }
+            });
+            //Labels for x-axis
+            const labels = buckets.map((_, i) =>(i * bucketSize).toFixed(2));
+            return {labels, buckets};
+        }
+        // Create Chart.js histogram
+        function createHistogram(canvasId, labels, data, color) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Count',
+                        data: data,
+                        backgroundColor: color,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: 'Score', font:{weight:'bold'} }, ticks: { maxRotation: 0, minRotation: 0, font:{size:8} } },
+                        y: { title: { display: true, text: 'Counts', font:{weight:'bold'} },  beginAtZero: true }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+        
+
         async function getScoreRange(csvPath) {
             const response = await fetch(csvPath);
             const text = await response.text();
@@ -364,11 +466,23 @@
             container.dataset.min = range.min;
             container.dataset.max = range.max;
 
+            //Create score range chart
+
+
             console.log("Score min:", container.dataset.min);
             console.log("Score max:", container.dataset.max);
         }
 
         displayScoreRange1();
+
+        // Render histogram for 1st configuration
+        async function renderHistogram1() {
+            const response = await fetch('Output/run1_predictions.csv');
+            const text = await response.text();
+            const {labels, buckets} = getScoreDistribution(text, 0.1);
+            createHistogram('histChart1', labels, buckets, 'red');
+        }
+        renderHistogram1();
 
         async function displayScoreRange2() {
             const container = document.getElementById('scoreRangeDiv2');
@@ -380,12 +494,25 @@
             // Add as data attributes
             container.dataset.min = range.min;
             container.dataset.max = range.max;
+   
 
             console.log("Score min:", container.dataset.min);
             console.log("Score max:", container.dataset.max);
         }
 
         displayScoreRange2();
+
+        // Render histogram for 2nd configuration
+        async function renderHistogram2() {
+            const response = await fetch('Output/run2_predictions.csv');
+            const text = await response.text();
+            const {labels, buckets} = getScoreDistribution(text, 0.1);
+            createHistogram('histChart2', labels, buckets, 'blue');
+        }
+        renderHistogram2();
+
+        
+
     
     </script>
 
