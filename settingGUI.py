@@ -12,32 +12,60 @@ import csv
 
 
 
-st.title("DeepForest Model Settings")
-st.header("Select Local Tiff File")
-image_path = st.text_input("Enter the path to your local TIFF file:") #   D:\Thesis2026\ProjectCode\Data\TreeAOIWGS84.tif
-if st.button("Load Image"):
-    if os.path.isfile(image_path):
-        st.success("✅ Image loaded successfully!")
-    else:
-        st.error("File not found. Please check the path and try again.")
+st.title("Deep Forest Model Settings")
 
+base_dir = "D:\Thesis2026\ProjectCode\Data"  # Base directory containing folders with .tif files
 col_left, col_right = st.columns(2)
 #--- Model Settings 1---
 with col_left:
+    st.header("Select 1st Tiff File")
+
+    #--- Choose File from Folder ---    
+    #  (2cm) D:\Thesis2026\ProjectCode\Data\TreeAOIWGS84.tif
+    tif_files = [f for f in os.listdir(base_dir) if f.endswith('.tif')]   
+    if tif_files:
+        selected_file = st.selectbox("Select 1st TIFF file:", tif_files)
+        image_path_1 = os.path.join(base_dir, selected_file)
+
+        if st.button("Load Image 1"):
+           st.success(f"✅ Loaded {selected_file}")
+           st.write(f"Image Path: {image_path_1}")
+    else:
+           st.error("No .tif files found in this folder.")
+    
+
 
     st.header("Settings for 1st Run")
     patch_size_1 = st.slider("Patch Size (1st Run)", min_value=400, max_value=2000, value=1200, step=100)
     patch_overlap_1 = st.slider("Patch Overlap (1st Run)", min_value=0.0, max_value=1.0, value=0.25, step=0.05)
-    score_threshold_1 = st.slider("Score Threshold (1st Run)", min_value=0.0, max_value=1.0, value=0.2, step=0.05)
+    score_threshold_1 = st.slider("Score Threshold (1st Run)", min_value=0.0, max_value=1.0, value=0.4, step=0.05)
     iou_threshold_1 = st.slider("NMS IOU Threshold (1st Run)", min_value=0.0, max_value=1.0, value=0.15, step=0.05)
     batch_size_1= st.slider("Batch Size (1st Run)", min_value=1, max_value=32, value=4)
 
 #--- Model Settings 2---
 with col_right:
+    st.header("Select 2nd Tiff File")
+
+
+    #--- Choose File from Folder ---
+    # (30cm)  D:\Thesis2026\ProjectCode\Data\Extract_TreeLINZ_03m.tif
+    tif_files = [f for f in os.listdir(base_dir) if f.endswith('.tif')]   
+    if tif_files:
+        selected_file = st.selectbox("Select 2nd TIFF file:", tif_files)
+        image_path_2 = os.path.join(base_dir, selected_file)
+
+        if st.button("Load Image 2"):
+           st.success(f"✅ Loaded {selected_file}")
+           st.write(f"Image Path: {image_path_2}")
+    else:
+           st.error("No .tif files found in this folder.")    
+
+
+
     st.header("Settings for 2nd Run")
     patch_size_2 = st.slider("Patch Size (2nd Run)", min_value=400, max_value=2000, value=1200, step=100)
     patch_overlap_2 = st.slider("Patch Overlap (2nd Run)", min_value=0.0, max_value=1.0, value=0.25, step=0.05)
-    score_threshold_2 = st.slider("Score Threshold (2nd Run)", min_value=0.0, max_value=1.0, value=0.2, step=0.05)
+    score_threshold_2 = st.slider("Score Threshold (2nd Run)", min_value=0.0, max_value=1.0, value=0.4, step=0.05)
     iou_threshold_2 = st.slider("NMS IOU Threshold (2nd Run)", min_value=0.0, max_value=1.0, value=0.15, step=0.05)
     batch_size_2 = st.slider("Batch Size (2nd Run)", min_value=1, max_value=32, value=4)
 
@@ -48,14 +76,16 @@ settings_1 = {
     'patch_overlap': patch_overlap_1,
     'score_threshold': score_threshold_1,
     'iou_threshold': iou_threshold_1,
-    'batch_size': batch_size_1
+    'batch_size': batch_size_1,
+    'image_path': image_path_1
 }
 settings_2 = {
     'patch_size': patch_size_2,
     'patch_overlap': patch_overlap_2,
     'score_threshold': score_threshold_2,
     'iou_threshold': iou_threshold_2,
-    'batch_size': batch_size_2
+    'batch_size': batch_size_2,
+    'image_path': image_path_2
 }
 #Create settings.csv file to store settings for both runs
 df = pd.DataFrame([settings_1, settings_2], index=["Run 1", "Run 2"])
@@ -125,11 +155,11 @@ def run_deepforest_with_progress(image_path,settings,output_gdf_name):
     return output_gdf_name
     
 #--- Run Model & Create settings relational table---
-if run_button and image_path is not None:
+if run_button and image_path_1 and image_path_2 is not None:
 
-    gdf1 = run_deepforest_with_progress(image_path,settings_1, "Output/run1_predictions.csv")
+    gdf1 = run_deepforest_with_progress(image_path_1,settings_1, "Output/run1_predictions.csv")
     st.success("✅ 1st run completed! Predictions saved as run1_predictions.csv")
-    gdf2 = run_deepforest_with_progress(image_path,settings_2, "Output/run2_predictions.csv")
+    gdf2 = run_deepforest_with_progress(image_path_2,settings_2, "Output/run2_predictions.csv")
     st.success("✅ 2nd run completed! Predictions saved as run2_predictions.csv")
 
 
