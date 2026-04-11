@@ -2,7 +2,7 @@
 ## -by DeepForest Model
 
 ## Introduction
-This project aims to...
+This project aims to address an automatic workflow for non-expert users to complete from the first step importing data to the last step generating reports for the whole process of comparing object detection results of pretrained deep learning model.
 
 ## Tech tags
 Python Jupyter Notebook Jave Script PostgresSQL HTML Geopandas Leaflet Geojson QGIS Deep Learing Model Workflow Automation Streamlit
