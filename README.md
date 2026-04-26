@@ -1,12 +1,13 @@
-# Workflow Automation of Tree Detection Visualization Comparison 
-## -by DeepForest Model
+# Workflow Automation of Tree Detection Visualization Comparison(Deep Forest Model)
+
 
 ## Introduction
 This project aims to...
 
-## Tech tags
-Python Jupyter Notebook Jave Script PostgresSQL HTML Geopandas Leaflet Geojson QGIS Deep Learing Model Workflow Automation Streamlit
-add link
+## Method
+Frontend: Html + Streamlit
+Backend: Postgresql
+Geoprocess: Overlap, Add attribute, Convert to Geojson, Upload to PostGIS
 ## Project Folder
 - data
   - TreeAOIWGS84.tif
@@ -35,5 +36,6 @@ Geojson file attribute Table
 | -------- | -------- | -------- |-------- | -------- | -------- |-------- | -------- |
 | 4733   | 1802   | 4799   |1876   | Tree  | 0.560285925865173   |TreeAOIWGS84.tif   | POLYGON ((4799 1802, 4799 1876, 4733 1876, 4733 1802, 4799 1802))   |
 | 4532   | 2385   | 4775   |2608   | Tree   | 0.53722459077835   | TreeAOIWGS84.tif   | POLYGON ((4775 2385, 4775 2608, 4532 2608, 4532 2385, 4775 2385))   |
+| ...   |    |    |   |    |    |    |    |
 
 ## Demo
