@@ -2,12 +2,12 @@
 
 
 ## Introduction
-This project aims to address an automatic workflow for non-expert users to complete from the first step importing data to the last step generating reports for the whole process of comparing object detection results of pretrained deep learning model.
+This is an automatic workflow  to complete from the first step importing data to the last step generating reports for the whole process of comparing tree detection results of DeepForest model.
 
 ## Method
-Frontend: Html + Streamlit
-Backend: Postgresql
-Geoprocess: Overlap, Add attribute, Convert to Geojson, Upload to PostGIS
+- Frontend: Html + Streamlit
+- Backend: Postgresql
+- Geoprocess: Overlap, Add attribute, Convert to Geojson, Upload to PostGIS
 ## Project Folder
 - data
   - TreeAOIWGS84.tif
@@ -24,13 +24,19 @@ Geoprocess: Overlap, Add attribute, Convert to Geojson, Upload to PostGIS
 - ComparisonWebpage.html
 
 ## Results
-Settings.csv (Relational Table)
+1. Model Setting
+![Settings GUI](data/StreamlitGUI.png)
+2. Comparison Report
+![Comparison Report](data/ComparisonReport.png)
+3. Settings.csv (Relational Table)
+
 |  | patch_size | patch_overlap | score_threshold | iou_threshold | batch_size |file_name |
 | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
 | Run 1   | 1200   | 0.25   | 0.2 | 0.15 | 4 |run1_predictions |
 | Run 2   | 800   | 0.25   | 0.4 | 0.15 | 4 | run2_predictions |
 
-Geojson file attribute Table
+
+4. Geojson file attribute Table
 
 | xmin | ymin | xmax | ymax | label | score | image_path | geometry | 
 | -------- | -------- | -------- |-------- | -------- | -------- |-------- | -------- |
@@ -39,3 +45,4 @@ Geojson file attribute Table
 | ...   |    |    |   |    |    |    |    |
 
 ## Demo
+![Demo](data/WorkflowGIF.gif)
