@@ -25,8 +25,10 @@ This is an automatic workflow  to complete from the first step importing data to
 
 ## Results
 1. Model Setting
+
 ![Settings GUI](data/StreamlitGUI.png)
 2. Comparison Report
+
 ![Comparison Report](data/ComparisonReport.png)
 3. Settings.csv (Relational Table)
 
