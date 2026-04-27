@@ -27,10 +27,10 @@ This is an automatic workflow  to complete from the first step importing data to
 ## Results
 ### 1. Model Setting
 
-![Settings GUI](data/StreamlitGUI.png)
+![Settings GUI](data/StreamlitGUI.PNG)
 ### 2. Comparison Report
 
-![Comparison Report](data/ComparisonReport.png)
+![Comparison Report](data/ComparisonReport.PNG)
 ### 3. Settings.csv (Relational Table)
 
 |  | patch_size | patch_overlap | score_threshold | iou_threshold | batch_size |file_name |
