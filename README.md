@@ -1,13 +1,12 @@
 # Workflow Automation of Tree Detection Visualization Comparison(Deep Forest Model)
 
-
 ## Introduction
-This is an automatic workflow  to complete from the first step importing data to the last step generating reports for the whole process of comparing tree detection results of DeepForest model.
+This is an automatic workflow  to complete from the first step importing aerial imagery to the last step generating reports for the whole process of comparing tree detection results of DeepForest model.
 
 ## Method
 - Frontend: Streamlit + html
-- Backend: Postgresql
-- Geoprocess: Overlap, Add attribute, Convert to Geojson, Upload to PostGIS
+- Backend: Postgresql (PostGIS)
+- Geoprocess: Overlap, Add attribute, Convert to Geojson
 ## Project Folder
 - data
   - TreeAOIWGS84.tif
@@ -25,7 +24,7 @@ This is an automatic workflow  to complete from the first step importing data to
 - ComparisonWebpage.html
 
 ## Results
-### 1. Model Setting
+### 1. Model Setting GUI
 
 ![Settings GUI](data/StreamlitGUI.PNG)
 ### 2. Comparison Report

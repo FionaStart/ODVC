@@ -584,14 +584,15 @@
  
 <!-- Leaflet Map Script for 1st Tree Detected Map -->
 <script>
-    var map1 = L.map('leaflet-map-1',{maxZoom:25,minZoom:1}).setView([-35.1228, 173.6125], 16);
+    var map1 = L.map('leaflet-map-1',{maxZoom:25,minZoom:1}).setView([-35.1228, 173.6125], 18);
     //Load local GeoTIFF
+    
     fetch("data/TreeAOIWGS84_1.tif")
         .then(response => response.arrayBuffer())
         .then(buffer => parseGeoraster(buffer))
         .then(georaster => {
             // Process the GeoTIFF data
-            const layer = new GeoRasterLayer({
+            const rasterLayer1 = new GeoRasterLayer({
                 georaster: georaster,
                 opacity: 1.0,
 
@@ -605,11 +606,11 @@
                     }
                 },
 
-                resolution: 128
+                resolution: 256
             });
            
-            layer.addTo(map1);
-            map1.fitBounds(layer.getBounds());
+            rasterLayer1.addTo(map1);
+            //map1.fitBounds(rasterLayer1.getBounds());
             //map1.zoomIn(1)
 
             
@@ -626,12 +627,12 @@
     fetch('Output/run1_predictions.geojson')
         .then(res => res.json())
         .then(data => {
-            var layer = L.geoJSON(data, {
+            var geojsonLayer1 = L.geoJSON(data, {
                 style: function (feature) {
                     return {
                         color: "red",
                         weight: 2,
-                        fillColor: "null",
+                        fillColor: "transparent",
                         fillOpacity: 0.5
                     };
                 },
@@ -641,21 +642,23 @@
                 }
             }).addTo(map1);
 
-            map1.fitBounds(layer.getBounds());
+            //map1.fitBounds(layer.getBounds());
         })
         .catch(err => console.error('Error fetching GeoJSON data:', err));
+    const boundsGroup1 = L.featureGroup([rasterLayer1,geojsonLayer1]);
+    map1.fitBounds(boundsGroup1.getBounds());
     
 </script>
 <!-- Leaflet Map Script for 2nd Tree Detected Map -->
 <script>
-    var map2 = L.map('leaflet-map-2',{maxZoom:25,minZoom:1}).setView([-35.1228, 173.6125], 14);
+    var map2 = L.map('leaflet-map-2',{maxZoom:25,minZoom:1}).setView([-35.1228, 173.6125], 18);
     //Load local GeoTIFF
     fetch("data/Extract_TreeLINZ_03m.tif")
         .then(response => response.arrayBuffer())
         .then(buffer => parseGeoraster(buffer))
         .then(georaster => {
             // Process the GeoTIFF data
-            const layer = new GeoRasterLayer({
+            const rasterLayer2 = new GeoRasterLayer({
                 georaster: georaster,
                 opacity: 1.0,
 
@@ -669,11 +672,11 @@
                     }
                 },
 
-                resolution: 128
+                resolution: 256
             });
            
-            layer.addTo(map2);
-            map2.fitBounds(layer.getBounds());
+            rasterLayer2.addTo(map2);
+           // map2.fitBounds(rasterLayer2.getBounds());
         })
         .catch(error => console.error("Error loading GeoTIFF:", error));
 
@@ -687,12 +690,12 @@
     fetch('Output/run2_predictions.geojson')
         .then(res => res.json())
         .then(data => {
-            var layer = L.geoJSON(data, {
+            var geojsonLayer2 = L.geoJSON(data, {
                 style: function (feature) {
                     return {
                         color: "blue",
                         weight: 2,
-                        fillColor: "null",
+                        fillColor: "transparent",
                         fillOpacity: 0.5
                     };
                 },
@@ -702,22 +705,25 @@
                 }
             }).addTo(map2);
 
-            map2.fitBounds(layer.getBounds());
+            //map2.fitBounds(layer.getBounds());
         })
         .catch(err => console.error('Error fetching GeoJSON data:', err));
+    const boundsGroup2 = L.featureGroup([rasterLayer2,geojsonLayer2]);
+    map2.fitBounds(boundsGroup2.getBounds());
 </script>
 
 
 <!-- Leaflet Map Script for 1st&2nd Tree Detected Map -->
 <script>
-    var map3 = L.map('leaflet-map-12',{maxZoom:25,minZoom:1}).setView([-35.1228, 173.6125], 14);
+    var map3 = L.map('leaflet-map-12',{maxZoom:25,minZoom:1}).setView([-35.1228, 173.6125], 20);
     //Load local GeoTIFF
+
     fetch("data/TreeAOIWGS84.tif")
         .then(response => response.arrayBuffer())
         .then(buffer => parseGeoraster(buffer))
         .then(georaster => {
             // Process the GeoTIFF data
-            const layer = new GeoRasterLayer({
+            const rasterLayer3 = new GeoRasterLayer({
                 georaster: georaster,
                 opacity: 1.0,
 
@@ -731,11 +737,11 @@
                     }
                 },
 
-                resolution: 128
+                resolution: 256
             });
            
-            layer.addTo(map3);
-            map3.fitBounds(layer.getBounds());
+            rasterLayer3.addTo(map3);
+            //map3.fitBounds(rasterLayer3.getBounds());
         })
         .catch(error => console.error("Error loading GeoTIFF:", error));
 
@@ -749,12 +755,12 @@
     fetch('Output/run1_predictions.geojson')
         .then(res => res.json())
         .then(data => {
-            var layer = L.geoJSON(data, {
+            var geojson1 = L.geoJSON(data, {
                 style: function (feature) {
                     return {
                         color: "red",
                         weight: 2,
-                        fillColor: "null",
+                        fillColor: "transparent",
                         fillOpacity: 0.5
                     };
                 },
@@ -764,19 +770,19 @@
                 }
             }).addTo(map3);
 
-            map3.fitBounds(layer.getBounds());
+            //map3.fitBounds(layer.getBounds());
         })
         .catch(err => console.error('Error fetching GeoJSON data:', err));
 
     fetch('Output/run2_predictions.geojson')
         .then(res => res.json())
         .then(data => {
-            var layer = L.geoJSON(data, {
+            var geojson2 = L.geoJSON(data, {
                 style: function (feature) {
                     return {
                         color: "blue",
                         weight: 2,
-                        fillColor: "null",
+                        fillColor: "transparent",
                         fillOpacity: 0.5
                     };
                 },
@@ -786,19 +792,19 @@
                 }
             }).addTo(map3);
 
-            map3.fitBounds(layer.getBounds());
+            //map3.fitBounds(layer.getBounds());
         })
         .catch(err => console.error('Error fetching GeoJSON data:', err));
 
     fetch('Output/1&2run_Overlap.geojson')
         .then(res => res.json())
         .then(data => {
-            var layer = L.geoJSON(data, {
+            var geojson12 = L.geoJSON(data, {
                 style: function (feature) {
                     return {
                         color: "yellow",
                         weight: 2,
-                        fillColor: "null",
+                        fillColor: "transparent",
                         fillOpacity: 0.5
                     };
                 },
@@ -808,9 +814,11 @@
                 }
             }).addTo(map3);
 
-            map3.fitBounds(layer.getBounds());
+            //map3.fitBounds(layer.getBounds());
         })
         .catch(err => console.error('Error fetching GeoJSON data:', err));
+      const boundsGroup3 = L.featureGroup([rasterLayer3,geojson1,geojson2,geojson12]);
+      map3.fitBounds(boundsGroup3.getBounds());
 </script>
 
 
