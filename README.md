@@ -47,4 +47,4 @@ This is an automatic workflow  to complete from the first step importing aerial 
 | ...   |    |    |   |    |    |    |    |
 
 ## Demo
-![Demo](data/WorkflowGIF.gif)
+![Demo](data/WorkflowGIFV2.gif)
