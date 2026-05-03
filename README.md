@@ -29,7 +29,7 @@ This is an automatic workflow  to complete from the first step importing aerial 
 ![Settings GUI](data/StreamlitGUI.PNG)
 ### 2. Comparison Report
 
-![Comparison Report](data/ComparisonReport.PNG)
+![Comparison Report](data/ComparisonReportV2.PNG)
 ### 3. Settings.csv (Relational Table)
 
 |  | patch_size | patch_overlap | score_threshold | iou_threshold | batch_size |file_name |
