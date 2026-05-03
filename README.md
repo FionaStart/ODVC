@@ -1,7 +1,7 @@
 # Workflow Automation of Tree Detection Visualization Comparison(Deep Forest Model)
 
 ## Introduction
-This is an automatic workflow  to complete from the first step importing aerial imagery to the last step generating reports for the whole process of comparing tree detection results of DeepForest model.
+This is an automatic workflow  to complete from the first step importing aerial imagery to the last step generating reports for the whole process of comparing tree detection results of DeepForest model (Weinstein et al., 2020). To run the workflow please follow 8 steps in [ObjectDetectVisualComp](ObjectDetectVisualComp.ipynb) to generate a web comparison report.
 
 ## Method
 - Frontend: Streamlit + html
